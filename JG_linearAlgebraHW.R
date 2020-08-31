@@ -6,48 +6,28 @@ setwd('C:/Users/gines/Downloads')
 library(ggplot2)
 load('LeukError.RData')
 
-randomColumns=sample(leuk,5001)
-plot(leuk[,randomColumns],col=leuk$V5001)
-leuk[2:500]
-#Me messing around finding which col isn't numeric
-is.na(leuk)
-apply(is.na(leuk),2,which)
-
 #Creates new df of just numeric values (last col was type of leukemia)
 leuknum=leuk[,1:5000]
 
 #Runs PCA on leuknum df, rank=5 indicates to get top 5 principal components
-#but you can mess around with this to see
-pcaOut=prcomp(leuknum,rank=5,scale=FALSE)
-scores = pcaOut[["x"]]
-cancers=leuk["V5001"]
-cancercoords=cbind(pcaOut[["x"]],cancers)
 
+pcaOut=prcomp(leuknum,rank=5,scale=FALSE)
+#pulls out scores for each observation
+scores = pcaOut[["x"]]
+#make new vector of just types of leukemia
+cancers=leuk["V5001"]
+#combine with types of leukemia
+cancercoords=cbind(pcaOut[["x"]],cancers)
+#filter by ALLB 
 ALLB =cancercoords %>% filter(V5001 == "ALL-B")
 
 plot(x=cancercoords$PC1,y=cancercoords$PC2)
-scores = pcaOut[["x"]]
-cancers=leuk["V5001"]
-cancercoords=cbind(pcaOut[["x"]],cancers)
-graph=plot_ly(x=cancercoords$PC1,y=cancercoords$PC2,z=cancercoords$PC3,type='scatter3d',mode='markers',marker=list(color=colors))
-graph
-
+#filter by AML
 AML= cancercoords %>% filter(V5001 == "AML")
-  ggplot(cancercoords, aes(x=PC1, y=PC2)) + geom_point()
 
- 
-
-plot(x=cancercoords$PC1,y=cancercoords$PC2)
-plot(x=cancercoords$PC1,y=cancercoords$PC2)
-
-graph=plot_ly(x=cancercoords$PC1,y=cancercoords$PC2,z=cancercoords$PC3,type='scatter3d',mode='markers',marker=list(color=colors))
-graph
-
+#filter by ALLT 
 ALLT= cancercoords %>%filter(V5001 == "ALL-T")
-plot(x=ALLB$PC1,y=ALLB$PC2)
-plot(x=ALLB$PC2,y=ALLB$PC3)
-
-
+#get row names so we can print the observation numbers on the plot
 print(rownames(AML))
 AML$Value_Number = rownames(AML)
 
@@ -94,26 +74,6 @@ ggplot(ALLT, aes(x=PC1, y=PC3)) +
   geom_point() + 
   geom_text(aes(label=Value_Number))
 
-plot(x=ALLT$PC1,y=ALLT$PC2)
-plot(x=ALLT$PC2,y=ALLT$PC3)
-
-plot(x=AML$PC1,y=AML$PC2)
-plot(x=AML$PC2,y=AML$PC3)
-
-graph=plot_ly(x=cancercoords$PC1,y=cancercoords$PC2,z=cancercoords$PC3,type='scatter3d',mode='markers',marker=list(color=colors))
-graph
-
-pcaOut=prcomp(leuknum,rank=3,scale=FALSE)
-scores2 = pcaOut[["x"]]
-#plot PC1vPC2 and PC2vPc3 etc
-dev.off()
-plot(x[,1],x[,2])
-plot(pcaOut$x[,2],pcaOut$x[,3])
-
-#3D plot of first 3 PCs, might not render on your computer
-graph=plot_ly(x=pcaOut$x[,1],y=pcaOut$x[,2],z=pcaOut$x[,3],type='scatter3d',mode='markers',marker=list(color=colors))
-graph
-
 #Summary of first three PCs
 summary(pcaOut)
 
@@ -125,7 +85,7 @@ sum(pcaOut$sdev[1:4]^2)/sum(pcaOut$sdev^2)
 sum(pcaOut$sdev[1:5]^2)/sum(pcaOut$sdev^2)
 sum(pcaOut$sdev[1:6]^2)/sum(pcaOut$sdev^2)
 
-#
+#Additional plots
 
 plot(pcaOut$x[,1:2], xlab = "Principal Component 1",
       ylab = "Principal Component 2")
